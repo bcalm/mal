@@ -29,10 +29,7 @@ class Reader {
   }
 }
 
-const read_form = (str) => {
-  const tokens = tokenize(str);
-  const reader = new Reader(tokens);
-  const token = reader.peek();
+const read_atom = (token) => {
   if (token.match(/^-?[0-9]+$/)) {
     return parseInt(token);
   }
@@ -42,4 +39,34 @@ const read_form = (str) => {
   return token;
 };
 
-module.exports = read_form;
+const read_list = (reader) => {
+  const ast = [];
+  while ((token = reader.peek()) !== ')') {
+    if (token === undefined) {
+      throw new Error('unbalanced');
+    }
+    const result = read_form(reader);
+    ast.push(result);
+  }
+  reader.next();
+  return ast;
+};
+
+const read_form = (reader) => {
+  const token = reader.peek();
+  switch (token) {
+    case '(':
+      reader.next();
+      return read_list(reader);
+  }
+  reader.next();
+  return read_atom(token);
+};
+
+const read_ast = (str) => {
+  const tokens = tokenize(str);
+  const reader = new Reader(tokens);
+  return read_form(reader);
+};
+
+module.exports = read_ast;

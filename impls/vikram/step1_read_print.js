@@ -13,8 +13,13 @@ const rep = (str) => pr_str(EVAL(read_form(str)));
 
 const loop = () => {
   rl.question('user> ', (str) => {
-    console.log(rep(str));
-    loop();
+    try {
+      console.log(rep(str));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      loop();
+    }
   });
 };
 
