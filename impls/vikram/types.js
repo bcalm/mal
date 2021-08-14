@@ -6,6 +6,10 @@ class List {
   toString() {
     return '(' + this.ast.map((ast) => ast.toString()).join(' ') + ')';
   }
+
+  isEmpty() {
+    return this.ast.length === 0;
+  }
 }
 
 class Vector {
@@ -25,6 +29,10 @@ class HashMap {
 
   toString() {
     return '{' + this.ast.map((ast) => ast.toString()).join(' ') + '}';
+  }
+
+  length() {
+    return this.ast.length / 2;
   }
 }
 
@@ -54,4 +62,14 @@ class Str {
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str, HashMap };
+class KeyWord {
+  constructor(ast) {
+    this.ast = ast;
+  }
+
+  toString() {
+    return ':' + this.ast;
+  }
+}
+
+module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord };
