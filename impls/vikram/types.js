@@ -50,6 +50,10 @@ class Symbol {
   toString() {
     return this.ast.toString();
   }
+
+  equals(sym) {
+    return this.ast.toString() === sym;
+  }
 }
 
 class Str {
