@@ -1,4 +1,4 @@
-const { List, Vector, Nil, Symbol, Str } = require('./types');
+const { List, Vector, Nil, Symbol, Str, HashMap } = require('./types');
 
 const tokenize = (str) => {
   const re = /[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)/g;
@@ -65,6 +65,14 @@ const read_vector = (reader) => {
   return new Vector(ast);
 };
 
+const read_hashmap = (reader) => {
+  const ast = read_seq(reader, '}');
+  if (ast.length % 2) {
+    throw new Error('map is unbalanced');
+  }
+  return new HashMap(ast);
+};
+
 const read_form = (reader) => {
   const token = reader.peek();
   reader.next();
@@ -75,6 +83,12 @@ const read_form = (reader) => {
       throw new Error('unexpected');
     case '[':
       return read_vector(reader);
+    case ']':
+      throw new Error('unexpected');
+    case '{':
+      return read_hashmap(reader);
+    case '}':
+      throw new Error('unexpected');
   }
   return read_atom(token);
 };

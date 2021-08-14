@@ -16,7 +16,7 @@ const loop = () => {
     try {
       console.log(rep(str));
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       loop();
     }

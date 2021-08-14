@@ -18,6 +18,16 @@ class Vector {
   }
 }
 
+class HashMap {
+  constructor(ast) {
+    this.ast = ast;
+  }
+
+  toString() {
+    return '{' + this.ast.map((ast) => ast.toString()).join(' ') + '}';
+  }
+}
+
 class Nil {
   toString() {
     return 'nil';
@@ -44,4 +54,4 @@ class Str {
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str };
+module.exports = { List, Vector, Nil, Symbol, Str, HashMap };
