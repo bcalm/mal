@@ -1,4 +1,4 @@
-const { List, Vector, Nil, Symbol, Str, HashMap } = require('./types');
+const { List, Vector, Nil, Symbol, Str, HashMap, KeyWord } = require('./types');
 
 const tokenize = (str) => {
   const re = /[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)/g;
@@ -34,6 +34,7 @@ const read_atom = (token) => {
   if (token === 'true') return true;
   if (token === 'false') return false;
   if (token === 'nil') return new Nil();
+  if (token.startsWith(':')) return new KeyWord(token.slice(1));
   if (token.startsWith('"')) {
     if (/[^\\]"$/.test(token)) {
       return new Str(token.slice(1, token.length - 1));
