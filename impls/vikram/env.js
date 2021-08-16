@@ -5,7 +5,7 @@ class Env {
   }
 
   set(key, value) {
-    this.data[key.symbol] = value;
+    return (this.data[key.symbol] = value);
   }
 
   find(key) {
@@ -17,9 +17,11 @@ class Env {
 
   get(key) {
     const env = this.find(key);
+    if (!env) {
+      throw new Error(`'${key}' not found`);
+    }
     const value = env.data[key.symbol];
     if (value) return value;
-    throw new Error('Symbol not found');
   }
 }
 

@@ -59,10 +59,6 @@ class Symbol {
   toString() {
     return this.symbol.toString();
   }
-
-  equals(sym) {
-    return this.symbol === sym;
-  }
 }
 
 class Str {

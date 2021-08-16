@@ -31,17 +31,22 @@ const eval_ast = (ast, env) => {
 
 const EVAL = (ast, env) => {
   if (!(ast instanceof List)) return eval_ast(ast, env);
-
-  if (ast.ast[0].equals('def!')) {
-    const value = EVAL(ast.ast[2], env);
-    env.set(ast.ast[1], value);
-    return value;
-  }
-
   if (ast.isEmpty()) return ast;
+  switch (ast.ast[0].symbol) {
+    case 'def!':
+      return env.set(ast.ast[1], EVAL(ast.ast[2], env));
 
-  const newList = ast.ast.map((as) => eval_ast(as, env));
-  return newList[0].apply(null, newList.slice(1));
+    case 'let*':
+      const newEnv = new Env(env);
+      const bindings = ast.ast[1].ast;
+      for (let i = 0; i < bindings.length; i += 2) {
+        newEnv.set(bindings[i], EVAL(bindings[i + 1], newEnv));
+      }
+      return EVAL(ast.ast[2], newEnv);
+    default:
+      const newList = ast.ast.map((as) => eval_ast(as, env));
+      return newList[0].apply(null, newList.slice(1));
+  }
 };
 
 const replEnv = new Env(null);
