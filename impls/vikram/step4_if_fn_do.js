@@ -1,4 +1,6 @@
 const readline = require('readline');
+const { coreEnv } = require('./core');
+const env = require('./env');
 const { Env } = require('./env');
 const pr_str = require('./printer');
 const read_form = require('./reader');
@@ -47,7 +49,8 @@ const EVAL = (ast, env) => {
     case 'if':
       const exprsResult = EVAL(ast.ast[1], env);
       if (exprsResult instanceof Nil || exprsResult === false) {
-        return EVAL(ast.ast[3], env);
+        const secondParam = ast.ast[3];
+        return secondParam ? EVAL(ast.ast[3], env) : new Nil();
       }
       return EVAL(ast.ast[2], env);
 
@@ -73,12 +76,7 @@ const EVAL = (ast, env) => {
   }
 };
 
-const replEnv = new Env(null);
-replEnv.set(new Symbol('+'), new Fn((a, b) => a + b));
-replEnv.set(new Symbol('-'), new Fn((a, b) => a - b));
-replEnv.set(new Symbol('*'), new Fn((a, b) => a * b));
-replEnv.set(new Symbol('/'), new Fn((a, b) => a / b));
-replEnv.set(new Symbol('pi'), Math.PI);
+const replEnv = new Env(coreEnv);
 
 const rep = (str) => pr_str(EVAL(read_form(str), replEnv));
 
