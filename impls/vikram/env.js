@@ -2,7 +2,6 @@ class Env {
   constructor(outer, binds = [], exprs = []) {
     this.data = {};
     this.outer = outer;
-
     binds.forEach((symbol, index) => {
       this.set(symbol, exprs[index]);
     });
@@ -24,8 +23,7 @@ class Env {
     if (!env) {
       throw new Error(`'${symbol}' not found`);
     }
-    const value = env.data[symbol];
-    if (value) return value;
+    return env.data[symbol];
   }
 }
 

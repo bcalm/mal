@@ -28,5 +28,74 @@ coreEnv.set(
     return args[0] instanceof List;
   })
 );
+coreEnv.set(
+  new Symbol('empty?'),
+  new Fn((...args) => {
+    return args[0].isEmpty();
+  })
+);
+coreEnv.set(
+  new Symbol('count'),
+  new Fn((...args) => {
+    return args[0] instanceof Nil ? 0 : args[0].length();
+  })
+);
+coreEnv.set(
+  new Symbol('='),
+  new Fn((...args) => {
+    return args[0] === args[1];
+  })
+);
+coreEnv.set(
+  new Symbol('<'),
+  new Fn((...args) => {
+    return args[0] < args[1];
+  })
+);
+coreEnv.set(
+  new Symbol('<='),
+  new Fn((...args) => {
+    return args[0] <= args[1];
+  })
+);
+coreEnv.set(
+  new Symbol('>'),
+  new Fn((...args) => {
+    return args[0] > args[1];
+  })
+);
+coreEnv.set(
+  new Symbol('>='),
+  new Fn((...args) => {
+    return args[0] >= args[1];
+  })
+);
+coreEnv.set(
+  new Symbol('str'),
+  new Fn((...args) => {
+    return args.reduce((arg, string) => string + arg, '');
+  })
+);
+coreEnv.set(
+  new Symbol('println'),
+  new Fn((...args) => {
+    const result = [];
+    args.forEach((arg) => {
+      result.push(pr_str(arg));
+    });
+    console.log(result.join(' '));
+    return new Nil();
+  })
+);
+coreEnv.set(
+  new Symbol('pr-str'),
+  new Fn((...args) => {
+    const result = [];
+    args.forEach((arg) => {
+      result.push(pr_str(arg));
+    });
+    return result.join(' ');
+  })
+);
 
 module.exports = { coreEnv };

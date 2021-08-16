@@ -10,6 +10,10 @@ class List {
   isEmpty() {
     return this.ast.length === 0;
   }
+
+  length() {
+    return this.ast.length;
+  }
 }
 
 class Vector {
@@ -19,6 +23,14 @@ class Vector {
 
   toString() {
     return '[' + this.ast.map((ast) => ast.toString()).join(' ') + ']';
+  }
+
+  isEmpty() {
+    return this.ast.length === 0;
+  }
+
+  length() {
+    return this.ast.length;
   }
 }
 
@@ -42,6 +54,14 @@ class HashMap {
       result += v;
     }
     return `{${result}}`;
+  }
+
+  isEmpty() {
+    return this.hashmap.size === 0;
+  }
+
+  length() {
+    return this.ast.size;
   }
 }
 

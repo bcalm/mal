@@ -12,9 +12,14 @@ const rl = readline.createInterface({
 });
 
 const eval_ast = (ast, env) => {
-  if (ast instanceof Symbol) return env.get(ast);
+  if (ast instanceof Symbol) {
+    return env.get(ast);
+  }
 
-  if (ast instanceof List) return EVAL(ast, env);
+  if (ast instanceof List) {
+    const evaluatedList = ast.ast.map((v) => EVAL(v, env));
+    return new List(evaluatedList);
+  }
 
   if (ast instanceof Vector)
     return new Vector(ast.ast.map((as) => eval_ast(as, env)));
@@ -50,7 +55,7 @@ const EVAL = (ast, env) => {
       const exprsResult = EVAL(ast.ast[1], env);
       if (exprsResult instanceof Nil || exprsResult === false) {
         const secondParam = ast.ast[3];
-        return secondParam ? EVAL(ast.ast[3], env) : new Nil();
+        return secondParam === undefined ? new Nil() : EVAL(ast.ast[3], env);
       }
       return EVAL(ast.ast[2], env);
 
@@ -63,24 +68,31 @@ const EVAL = (ast, env) => {
 
     case 'fn*':
       const binds = ast.ast[1].ast;
-      const fnBody = ast.ast[2];
-      const fn = (...fnArgs) => {
-        const newEnv = new Env(env, binds, fnArgs);
-        return EVAL(fnBody, newEnv);
+      const fnBody = ast.ast.slice(2);
+      const fn = function (...args) {
+        let evaluatedArgs = args.map((x) => EVAL(x, env));
+        const fn_env = new Env(env, binds, evaluatedArgs);
+        let result = new Nil();
+        for (let i = 2; i < ast.ast.length; i++) {
+          result = EVAL(ast.ast[i], fn_env);
+        }
+        return result;
       };
       return new Fn(fn);
     default:
-      const newList = ast.ast.map((as) => eval_ast(as, env));
-      const fnToApply = newList[0];
+      const newList = eval_ast(ast, env);
+      const fnToApply = newList.ast[0];
       if (fnToApply instanceof Fn)
-        return fnToApply.fn.apply(null, newList.slice(1));
-      return new List(newList);
+        return fnToApply.fn.apply(null, newList.ast.slice(1));
+      return newList;
   }
 };
 
 const replEnv = new Env(coreEnv);
 
 const rep = (str) => pr_str(EVAL(read_form(str), replEnv));
+
+rep('(def! not (fn* (a) (if a false true)))');
 
 const loop = () => {
   rl.question('user> ', (str) => {
