@@ -35,9 +35,9 @@ const eval_ast = (ast, env) => {
 
   if (ast instanceof HashMap) {
     const newHash = [];
-    for (let i = 0; i < ast.length(); i += 2) {
-      newHash.push(EVAL(ast.ast[i], env));
-      newHash.push(EVAL(ast.ast[i + 1], env));
+    for (let [k, v] of ast.hashmap.entries()) {
+      newHash.push(EVAL(k, env));
+      newHash.push(EVAL(v, env));
     }
     return new HashMap(newHash);
   }
@@ -65,7 +65,7 @@ const loop = () => {
     try {
       console.log(rep(str));
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     } finally {
       loop();
     }

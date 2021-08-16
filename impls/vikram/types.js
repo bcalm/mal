@@ -24,15 +24,24 @@ class Vector {
 
 class HashMap {
   constructor(ast) {
-    this.ast = ast;
+    const hashmap = new Map();
+    for (let i = 0; i < ast.length; i += 2) {
+      hashmap.set(ast[i], ast[i + 1]);
+    }
+    this.hashmap = hashmap;
   }
 
   toString() {
-    return '{' + this.ast.map((ast) => ast.toString()).join(' ') + '}';
-  }
-
-  length() {
-    return this.ast.length / 2;
+    let result = '';
+    let separator = '';
+    for (let [k, v] of this.hashmap.entries()) {
+      result += separator;
+      separator = ' ';
+      result += k;
+      result += separator;
+      result += v;
+    }
+    return `{${result}}`;
   }
 }
 
@@ -49,10 +58,6 @@ class Symbol {
 
   toString() {
     return this.ast.toString();
-  }
-
-  equals(sym) {
-    return this.ast.toString() === sym;
   }
 }
 
