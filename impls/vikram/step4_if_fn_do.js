@@ -2,7 +2,7 @@ const readline = require('readline');
 const { Env } = require('./env');
 const pr_str = require('./printer');
 const read_form = require('./reader');
-const { List, Symbol, Vector, HashMap, Nil } = require('./types');
+const { List, Symbol, Vector, HashMap, Nil, Fn } = require('./types');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -51,17 +51,33 @@ const EVAL = (ast, env) => {
       }
       return EVAL(ast.ast[2], env);
 
+    case 'do':
+      let result = new Nil();
+      ast.ast.slice(1).forEach((exprs) => {
+        result = EVAL(exprs, env);
+      });
+      return result;
+
+    case 'fn*':
+      const binds = ast.ast[1].ast;
+      const fnBody = ast.ast[2];
+      const fn = (...fnArgs) => {
+        const newEnv = new Env(env, binds, fnArgs);
+        return EVAL(fnBody, newEnv);
+      };
+      return new Fn(fn);
     default:
       const newList = ast.ast.map((as) => eval_ast(as, env));
-      return newList[0].apply(null, newList.slice(1));
+      const fnToApply = newList[0];
+      return fnToApply.fn.apply(null, newList.slice(1));
   }
 };
 
 const replEnv = new Env(null);
-replEnv.set(new Symbol('+'), (a, b) => a + b);
-replEnv.set(new Symbol('-'), (a, b) => a - b);
-replEnv.set(new Symbol('*'), (a, b) => a * b);
-replEnv.set(new Symbol('/'), (a, b) => a / b);
+replEnv.set(new Symbol('+'), new Fn((a, b) => a + b));
+replEnv.set(new Symbol('-'), new Fn((a, b) => a - b));
+replEnv.set(new Symbol('*'), new Fn((a, b) => a * b));
+replEnv.set(new Symbol('/'), new Fn((a, b) => a / b));
 replEnv.set(new Symbol('pi'), Math.PI);
 
 const rep = (str) => pr_str(EVAL(read_form(str), replEnv));

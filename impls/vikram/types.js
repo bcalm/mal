@@ -81,4 +81,14 @@ class KeyWord {
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord };
+class Fn {
+  constructor(fn) {
+    this.fn = fn;
+  }
+
+  toString() {
+    return '#<function>';
+  }
+}
+
+module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord, Fn };
