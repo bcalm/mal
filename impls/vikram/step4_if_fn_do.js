@@ -72,7 +72,9 @@ const EVAL = (ast, env) => {
     default:
       const newList = ast.ast.map((as) => eval_ast(as, env));
       const fnToApply = newList[0];
-      return fnToApply.fn.apply(null, newList.slice(1));
+      if (fnToApply instanceof Fn)
+        return fnToApply.fn.apply(null, newList.slice(1));
+      return new List(newList);
   }
 };
 

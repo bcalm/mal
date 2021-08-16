@@ -1,6 +1,6 @@
 const { Env } = require('./env');
 const pr_str = require('./printer');
-const { Symbol, Fn, Nil } = require('./types');
+const { Symbol, Fn, Nil, List } = require('./types');
 
 const coreEnv = new Env(null);
 
@@ -14,6 +14,18 @@ coreEnv.set(
   new Fn((...args) => {
     console.log(pr_str(args[0]));
     return new Nil();
+  })
+);
+coreEnv.set(
+  new Symbol('list'),
+  new Fn((...args) => {
+    return new List(args);
+  })
+);
+coreEnv.set(
+  new Symbol('list?'),
+  new Fn((...args) => {
+    return args[0] instanceof List;
   })
 );
 
