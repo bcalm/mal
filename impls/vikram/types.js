@@ -53,11 +53,15 @@ class Nil {
 
 class Symbol {
   constructor(ast) {
-    this.ast = ast;
+    this.symbol = ast;
   }
 
   toString() {
-    return this.ast.toString();
+    return this.symbol.toString();
+  }
+
+  equals(sym) {
+    return this.symbol === sym;
   }
 }
 

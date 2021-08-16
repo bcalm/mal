@@ -10,7 +10,7 @@ const rl = readline.createInterface({
 });
 
 const eval_ast = (ast, env) => {
-  if (ast instanceof Symbol) return env.get(ast.ast);
+  if (ast instanceof Symbol) return env.get(ast);
 
   if (ast instanceof List) return EVAL(ast, env);
 
@@ -19,9 +19,9 @@ const eval_ast = (ast, env) => {
 
   if (ast instanceof HashMap) {
     const newHash = [];
-    for (let i = 0; i < ast.length(); i += 2) {
-      newHash.push(EVAL(ast.ast[i], env));
-      newHash.push(EVAL(ast.ast[i + 1], env));
+    for (let [k, v] of ast.hashmap.entries()) {
+      newHash.push(EVAL(k, env));
+      newHash.push(EVAL(v, env));
     }
     return new HashMap(newHash);
   }
@@ -44,12 +44,12 @@ const EVAL = (ast, env) => {
   return newList[0].apply(null, newList.slice(1));
 };
 
-const replEnv = new Env();
-replEnv.set('+', (a, b) => a + b);
-replEnv.set('-', (a, b) => a - b);
-replEnv.set('*', (a, b) => a * b);
-replEnv.set('/', (a, b) => a / b);
-replEnv.set('pi', Math.PI);
+const replEnv = new Env(null);
+replEnv.set(new Symbol('+'), (a, b) => a + b);
+replEnv.set(new Symbol('-'), (a, b) => a - b);
+replEnv.set(new Symbol('*'), (a, b) => a * b);
+replEnv.set(new Symbol('/'), (a, b) => a / b);
+replEnv.set(new Symbol('pi'), Math.PI);
 
 const rep = (str) => pr_str(EVAL(read_form(str), replEnv));
 
