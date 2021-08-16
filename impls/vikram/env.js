@@ -1,10 +1,16 @@
+const { List } = require('./types');
+
 class Env {
   constructor(outer, binds = [], exprs = []) {
     this.data = {};
     this.outer = outer;
-    binds.forEach((symbol, index) => {
-      this.set(symbol, exprs[index]);
-    });
+    for (let index = 0; index < binds.length; index++) {
+      const symbol = binds[index];
+      if (symbol == '&') {
+        this.data[binds[index + 1]] = new List(exprs.slice(index));
+        break;
+      } else this.set(symbol, exprs[index]);
+    }
   }
 
   set(key, value) {

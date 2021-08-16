@@ -14,6 +14,15 @@ class List {
   length() {
     return this.ast.length;
   }
+
+  equals(anotherList) {
+    if (!(anotherList instanceof List)) return false;
+    if (this.ast.length !== anotherList.ast.length) return false;
+
+    return this.ast.every(
+      (element, index) => element === anotherList.ast[index]
+    );
+  }
 }
 
 class Vector {
@@ -31,6 +40,15 @@ class Vector {
 
   length() {
     return this.ast.length;
+  }
+
+  equals(anotherVector) {
+    if (!(anotherVector instanceof Vector)) return false;
+    if (this.ast.length !== anotherVector.ast.length) return false;
+
+    return this.ast.every(
+      (element, index) => element === anotherVector.ast[index]
+    );
   }
 }
 
@@ -69,6 +87,10 @@ class Nil {
   toString() {
     return 'nil';
   }
+
+  equals(anotherInput) {
+    return anotherInput instanceof Nil;
+  }
 }
 
 class Symbol {
@@ -89,6 +111,11 @@ class Str {
   toString() {
     return '"' + this.ast + '"';
   }
+
+  equals(anotherString) {
+    if (!(anotherString instanceof String)) return false;
+    return this.ast === anotherString.ast;
+  }
 }
 
 class KeyWord {
@@ -98,6 +125,11 @@ class KeyWord {
 
   toString() {
     return ':' + this.ast;
+  }
+
+  equals(anotherKeyword) {
+    if (!(anotherKeyword instanceof KeyWord)) return false;
+    return this.ast === anotherKeyword.ast;
   }
 }
 

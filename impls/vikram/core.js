@@ -1,6 +1,6 @@
 const { Env } = require('./env');
 const pr_str = require('./printer');
-const { Symbol, Fn, Nil, List } = require('./types');
+const { Symbol, Fn, Nil, List, Vector } = require('./types');
 
 const coreEnv = new Env(null);
 
@@ -12,7 +12,9 @@ coreEnv.set(new Symbol('pi'), Math.PI);
 coreEnv.set(
   new Symbol('prn'),
   new Fn((...args) => {
-    console.log(pr_str(args[0]));
+    if (args[0]) {
+      console.log(pr_str(args[0]));
+    }
     return new Nil();
   })
 );
@@ -43,7 +45,7 @@ coreEnv.set(
 coreEnv.set(
   new Symbol('='),
   new Fn((...args) => {
-    return args[0] === args[1];
+    return args[0].toString() === args[1].toString();
   })
 );
 coreEnv.set(
