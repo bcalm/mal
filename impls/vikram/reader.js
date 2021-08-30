@@ -35,11 +35,15 @@ const read_atom = (token) => {
   if (token === 'false') return false;
   if (token === 'nil') return new Nil();
   if (token.startsWith(':')) return new KeyWord(token.slice(1));
+  if (token.match(/^"(?:\\.|[^\\"])*"$/)) {
+    const str = token
+      .slice(1, -1)
+      .replace(/\\(.)/g, (_, c) => (c === 'n' ? '\n' : c));
+    return new Str(str);
+  }
+
   if (token.startsWith('"')) {
-    if (/[^\\]"$/.test(token)) {
-      return new Str(token.slice(1, token.length - 1));
-    }
-    throw new Error('unbalanced');
+    throw 'unbalanced';
   }
   return new Symbol(token);
 };
@@ -74,6 +78,20 @@ const read_hashmap = (reader) => {
   return new HashMap(ast);
 };
 
+const prepend_symbol = (reader, sym) => {
+  const tokens = [sym];
+  let token = reader.next();
+  while (token) {
+    tokens.push(token);
+    token = reader.next();
+  }
+  return new Reader(tokens);
+};
+
+const read_deref = (reader) => {
+  return prepend_symbol(reader, new Symbol('deref'));
+};
+
 const read_form = (reader) => {
   const token = reader.peek();
   reader.next();
@@ -88,8 +106,12 @@ const read_form = (reader) => {
       throw new Error('unexpected');
     case '{':
       return read_hashmap(reader);
+    case '@':
+      return read_deref(reader);
     case '}':
       throw new Error('unexpected');
+    case ';':
+      throw new Nil();
   }
   return read_atom(token);
 };

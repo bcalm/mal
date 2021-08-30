@@ -145,4 +145,28 @@ class Fn {
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord, Fn };
+class Atom {
+  constructor(value) {
+    this.value = value;
+  }
+
+  toString() {
+    return `(atom ${this.value})`;
+  }
+
+  equals(that) {
+    return equals(this.value, that.value);
+  }
+
+  set(value) {
+    this.value = value;
+    return this.value;
+  }
+
+  swap(fn, value) {
+    this.value = fn.apply(null, [this.value, ...value]);
+    return this.value;
+  }
+}
+
+module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord, Fn, Atom };
