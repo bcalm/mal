@@ -73,6 +73,8 @@ const deref = (atom) => atom.value;
 
 const resetAtom = (atom, value) => atom.set(value);
 
+const swap = (atom, fn, ...value) => atom.swap(fn, value);
+
 const core = {
   '+': add,
   '*': mul,
@@ -97,6 +99,7 @@ const core = {
   'reset!': resetAtom,
   'read-string': readString,
   slurp,
+  'swap!': swap,
 };
 
 module.exports = core;

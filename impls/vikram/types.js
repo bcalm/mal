@@ -162,6 +162,11 @@ class Atom {
     this.value = value;
     return this.value;
   }
+
+  swap(fn, value) {
+    this.value = fn.apply(null, [this.value, ...value]);
+    return this.value;
+  }
 }
 
 module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord, Fn, Atom };

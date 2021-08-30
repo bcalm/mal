@@ -104,13 +104,6 @@ rep('(def! not (fn* (a) (if a false true)))');
 rep(
   '(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))'
 );
-rep(
-  `(def! swap!
-      (fn* [at func & args]
-        (reset! at
-          (eval
-            (concat (list func (deref at)) args)))))`
-);
 
 const loop = () => {
   rl.question('user> ', (str) => {
