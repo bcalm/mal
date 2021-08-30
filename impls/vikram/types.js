@@ -134,8 +134,10 @@ class KeyWord {
 }
 
 class Fn {
-  constructor(fn) {
-    this.fn = fn;
+  constructor(fnBody, binds, env) {
+    this.fnBody = fnBody;
+    this.binds = binds;
+    this.env = env;
   }
 
   toString() {
