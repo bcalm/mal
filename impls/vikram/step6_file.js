@@ -76,30 +76,40 @@ const EVAL = (ast, env) => {
         const fnBody = ast.ast[2];
         return new Fn(fnBody, binds, env);
 
-      case 'eval':
-        return EVAL(ast.ast[1], env);
       default:
         const newList = eval_ast(ast, env);
         const fnToApply = newList.ast[0];
         if (fnToApply instanceof Fn) {
           ast = fnToApply.fnBody;
           env = new Env(fnToApply.env, fnToApply.binds, newList.ast.slice(1));
-        } else {
+        } else if (fnToApply instanceof Function) {
           return fnToApply.apply(null, newList.ast.slice(1));
+        } else {
+          return fnToApply;
         }
     }
   }
 };
 
 const loadSym = (env, sym, val) => env.set(new Symbol(sym), val);
+
 const replEnv = new Env(null);
 Object.entries(core).forEach(([sym, val]) => loadSym(replEnv, sym, val));
 
 const rep = (str) => pr_str(EVAL(read_form(str), replEnv));
+const eval = (ast) => EVAL(ast, replEnv);
+loadSym(replEnv, 'eval', eval);
 
 rep('(def! not (fn* (a) (if a false true)))');
 rep(
   '(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))'
+);
+rep(
+  `(def! swap!
+      (fn* [at func & args]
+        (reset! at
+          (eval
+            (concat (list func (deref at)) args)))))`
 );
 
 const loop = () => {

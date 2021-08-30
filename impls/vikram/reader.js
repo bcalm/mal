@@ -78,18 +78,15 @@ const read_hashmap = (reader) => {
   return new HashMap(ast);
 };
 
-const prepend_symbol = (reader, sym) => {
-  const tokens = [sym];
-  let token = reader.next();
-  while (token) {
-    tokens.push(token);
-    token = reader.next();
-  }
-  return new Reader(tokens);
+const prependSymbol = (reader, symbolStr) => {
+  // reader.next();
+  const symbol = new Symbol(symbolStr);
+  const ast = read_form(reader);
+  return new List([symbol, ast]);
 };
 
 const read_deref = (reader) => {
-  return prepend_symbol(reader, new Symbol('deref'));
+  return prependSymbol(reader, 'deref');
 };
 
 const read_form = (reader) => {

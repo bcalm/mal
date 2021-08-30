@@ -41,7 +41,8 @@ const gt = (...args) => args[0] > args[1];
 
 const ge = (...args) => args[0] >= args[1];
 
-const str = (...args) => args.reduce((arg, string) => string + arg, '');
+const str = (...args) =>
+  new Str(args.reduce((arg, string) => arg + string.ast, ''));
 
 const printLine = (...args) => {
   const result = [];
@@ -72,8 +73,6 @@ const deref = (atom) => atom.value;
 
 const resetAtom = (atom, value) => atom.set(value);
 
-const swap = (atom, fn, ...value) => atom.swap(fn, value);
-
 const core = {
   '+': add,
   '*': mul,
@@ -98,7 +97,6 @@ const core = {
   'reset!': resetAtom,
   'read-string': readString,
   slurp,
-  'swap!': swap,
 };
 
 module.exports = core;
