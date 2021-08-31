@@ -1,10 +1,5 @@
-const { MalVal } = require('./types');
+const { prStr } = require('./types');
 
-const pr_str = (value, print_readably = false) => {
-  if (value instanceof MalVal) {
-    return value.prn_str(print_readably);
-  }
-  return value.toString();
-};
+const pr_str = prStr;
 
 module.exports = pr_str;

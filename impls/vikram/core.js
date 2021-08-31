@@ -10,7 +10,7 @@ const div = (a, b) => a / b;
 
 const prn = (...args) => {
   if (args[0]) {
-    console.log(pr_str(args[0]));
+    console.log(pr_str(args[0], true));
   }
   return new Nil();
 };
@@ -56,7 +56,7 @@ const printLine = (...args) => {
 const printString = (...args) => {
   const result = [];
   args.forEach((arg) => {
-    result.push(pr_str(arg));
+    result.push(pr_str(arg, true));
   });
   return result.join(' ');
 };

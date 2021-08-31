@@ -1,5 +1,3 @@
-const pr_str = require('./printer');
-
 class MalVal {
   constructor() {}
 
@@ -9,7 +7,14 @@ class MalVal {
 }
 
 const mkString = (element, open, close) => {
-  return `${open} ${element} ${close}`;
+  return `${open}${element}${close}`;
+};
+
+const prStr = (value, print_readably = false) => {
+  if (value instanceof MalVal) {
+    return value.prn_str(print_readably);
+  }
+  return value.toString();
 };
 
 class List extends MalVal {
@@ -19,14 +24,7 @@ class List extends MalVal {
   }
 
   prn_str(print_readably = false) {
-    const element = this.ast
-      .map((ast) => {
-        if (ast instanceof MalVal) {
-          return ast.prn_str(print_readably);
-        }
-        return ast.toString();
-      })
-      .join(' ');
+    const element = this.ast.map((ast) => prStr(ast, print_readably)).join(' ');
     return mkString(element, '(', ')');
   }
 
@@ -55,15 +53,8 @@ class Vector extends MalVal {
   }
 
   prn_str(print_readably = false) {
-    const element = this.ast
-      .map((ast) => {
-        if (ast instanceof MalVal) {
-          return ast.prn_str(print_readably);
-        }
-        return ast.toString();
-      })
-      .join(' ');
-    return mkString(element, '(', ')');
+    const element = this.ast.map((ast) => prStr(ast, print_readably)).join(' ');
+    return mkString(element, '[', ']');
   }
 
   isEmpty() {
@@ -100,11 +91,12 @@ class HashMap extends MalVal {
     for (let [k, v] of this.hashmap.entries()) {
       result += separator;
       separator = ' ';
-      result += k;
+      result += prStr(k, print_readably);
       result += separator;
-      result += v;
+      result += prStr(v, print_readably);
     }
-    return mkString(result, '(', ')');
+    console.log(result);
+    return mkString(result, '{', '}');
   }
 
   isEmpty() {
@@ -149,6 +141,7 @@ class Str extends MalVal {
   }
 
   prn_str(print_readably = false) {
+    console.log(print_readably);
     if (print_readably) {
       return (
         '"' +
@@ -228,4 +221,5 @@ module.exports = {
   Fn,
   Atom,
   MalVal,
+  prStr,
 };
