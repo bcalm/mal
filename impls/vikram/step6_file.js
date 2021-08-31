@@ -74,7 +74,16 @@ const EVAL = (ast, env) => {
       case 'fn*':
         const binds = ast.ast[1].ast;
         const fnBody = ast.ast[2];
-        return new Fn(fnBody, binds, env);
+        const fn = function (...args) {
+          let evaluatedArgs = args.map((x) => EVAL(x, env));
+          const fn_env = new Env(env, binds, evaluatedArgs);
+          let result = new Nil();
+          for (let i = 2; i < ast.ast.length; i++) {
+            result = EVAL(ast.ast[i], fn_env);
+          }
+          return result;
+        };
+        return new Fn(fnBody, binds, env, fn);
 
       default:
         const newList = eval_ast(ast, env);
@@ -96,7 +105,7 @@ const loadSym = (env, sym, val) => env.set(new Symbol(sym), val);
 const replEnv = new Env(null);
 Object.entries(core).forEach(([sym, val]) => loadSym(replEnv, sym, val));
 
-const rep = (str) => pr_str(EVAL(read_form(str), replEnv));
+const rep = (str) => pr_str(EVAL(read_form(str), replEnv), true);
 const eval = (ast) => EVAL(ast, replEnv);
 loadSym(replEnv, 'eval', eval);
 

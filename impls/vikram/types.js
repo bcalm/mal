@@ -1,10 +1,33 @@
-class List {
+const pr_str = require('./printer');
+
+class MalVal {
+  constructor() {}
+
+  prn_str(print_readably = false) {
+    return 'hello_world';
+  }
+}
+
+const mkString = (element, open, close) => {
+  return `${open} ${element} ${close}`;
+};
+
+class List extends MalVal {
   constructor(ast) {
+    super();
     this.ast = ast;
   }
 
-  toString() {
-    return '(' + this.ast.map((ast) => ast.toString()).join(' ') + ')';
+  prn_str(print_readably = false) {
+    const element = this.ast
+      .map((ast) => {
+        if (ast instanceof MalVal) {
+          return ast.prn_str(print_readably);
+        }
+        return ast.toString();
+      })
+      .join(' ');
+    return mkString(element, '(', ')');
   }
 
   isEmpty() {
@@ -25,13 +48,22 @@ class List {
   }
 }
 
-class Vector {
+class Vector extends MalVal {
   constructor(ast) {
+    super();
     this.ast = ast;
   }
 
-  toString() {
-    return '[' + this.ast.map((ast) => ast.toString()).join(' ') + ']';
+  prn_str(print_readably = false) {
+    const element = this.ast
+      .map((ast) => {
+        if (ast instanceof MalVal) {
+          return ast.prn_str(print_readably);
+        }
+        return ast.toString();
+      })
+      .join(' ');
+    return mkString(element, '(', ')');
   }
 
   isEmpty() {
@@ -52,8 +84,9 @@ class Vector {
   }
 }
 
-class HashMap {
+class HashMap extends MalVal {
   constructor(ast) {
+    super();
     const hashmap = new Map();
     for (let i = 0; i < ast.length; i += 2) {
       hashmap.set(ast[i], ast[i + 1]);
@@ -61,7 +94,7 @@ class HashMap {
     this.hashmap = hashmap;
   }
 
-  toString() {
+  prn_str(print_readably = false) {
     let result = '';
     let separator = '';
     for (let [k, v] of this.hashmap.entries()) {
@@ -71,7 +104,7 @@ class HashMap {
       result += separator;
       result += v;
     }
-    return `{${result}}`;
+    return mkString(result, '(', ')');
   }
 
   isEmpty() {
@@ -83,8 +116,8 @@ class HashMap {
   }
 }
 
-class Nil {
-  toString() {
+class Nil extends MalVal {
+  prn_str() {
     return 'nil';
   }
 
@@ -93,37 +126,50 @@ class Nil {
   }
 }
 
-class Symbol {
+class Symbol extends MalVal {
   constructor(ast) {
+    super();
     this.symbol = ast;
   }
 
-  toString() {
+  prn_str(print_readably = false) {
     return this.symbol.toString();
   }
 }
 
-class Str {
+class Str extends MalVal {
   constructor(ast) {
+    super();
     this.ast = ast;
-  }
-
-  toString() {
-    return '"' + this.ast + '"';
   }
 
   equals(anotherString) {
     if (!(anotherString instanceof String)) return false;
     return this.ast === anotherString.ast;
   }
+
+  prn_str(print_readably = false) {
+    if (print_readably) {
+      return (
+        '"' +
+        this.ast
+          .replace(/\\/g, '\\\\')
+          .replace(/"/g, '\\"')
+          .replace(/\n/g, '\\n') +
+        '"'
+      );
+    }
+    return '"' + this.ast + '"';
+  }
 }
 
-class KeyWord {
+class KeyWord extends MalVal {
   constructor(ast) {
+    super();
     this.ast = ast;
   }
 
-  toString() {
+  prn_str(print_readably = false) {
     return ':' + this.ast;
   }
 
@@ -133,24 +179,27 @@ class KeyWord {
   }
 }
 
-class Fn {
-  constructor(fnBody, binds, env) {
+class Fn extends MalVal {
+  constructor(fnBody, binds, env, fn) {
+    super();
     this.fnBody = fnBody;
     this.binds = binds;
     this.env = env;
+    this.fn = fn;
   }
 
-  toString() {
+  prn_str(print_readably = false) {
     return '#<function>';
   }
 }
 
-class Atom {
+class Atom extends MalVal {
   constructor(value) {
+    super();
     this.value = value;
   }
 
-  toString() {
+  prn_str(print_readably = false) {
     return `(atom ${this.value})`;
   }
 
@@ -163,10 +212,20 @@ class Atom {
     return this.value;
   }
 
-  swap(fn, value) {
-    this.value = fn.apply(null, [this.value, ...value]);
+  get() {
     return this.value;
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str, HashMap, KeyWord, Fn, Atom };
+module.exports = {
+  List,
+  Vector,
+  Nil,
+  Symbol,
+  Str,
+  HashMap,
+  KeyWord,
+  Fn,
+  Atom,
+  MalVal,
+};

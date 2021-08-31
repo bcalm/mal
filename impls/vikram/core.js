@@ -69,11 +69,14 @@ const atom = (value) => new Atom(value);
 
 const isAtom = (value) => value instanceof Atom;
 
-const deref = (atom) => atom.value;
+const deref = (atom) => atom.get();
 
 const resetAtom = (atom, value) => atom.set(value);
 
-const swap = (atom, fn, ...value) => atom.swap(fn, value);
+const swap = (atom, func, ...args) => {
+  func = func.fn || func;
+  return atom.set(func(atom.get(), ...args));
+};
 
 const core = {
   '+': add,
