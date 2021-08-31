@@ -1,6 +1,6 @@
 const pr_str = require('./printer');
 const read_str = require('./reader');
-const { Nil, List, Str, Atom } = require('./types');
+const { Nil, List, Str, Atom, equals, Vector } = require('./types');
 const { readFileSync } = require('fs');
 
 const add = (a, b) => a + b;
@@ -18,8 +18,6 @@ const isList = (...args) => args[0] instanceof List;
 const isEmpty = (...args) => args[0].isEmpty();
 
 const count = (...args) => (args[0] instanceof Nil ? 0 : args[0].length());
-
-const equal = (...args) => args[0].toString() === args[1].toString();
 
 const lt = (...args) => args[0] < args[1];
 
@@ -41,8 +39,18 @@ const deref = (atom) => atom.get();
 
 const resetAtom = (atom, value) => atom.set(value);
 
+const cons = (value, list) => list.cons(value);
+
+const concat = (...lists) =>
+  lists.reduce(
+    (list, concattedList) => list.concat(concattedList),
+    new List([])
+  );
+
 const str = (...args) =>
-  new Str(args.reduce((arg, string) => arg + string.ast, ''));
+  new Str(args.reduce((arg, string) => arg + pr_str(string), ''));
+
+const vec = (list) => new Vector([...list.ast]);
 
 const printLine = (...args) => {
   const result = [];
@@ -86,7 +94,7 @@ const core = {
   'list?': isList,
   'empty?': isEmpty,
   count: count,
-  '=': equal,
+  '=': equals,
   '<': lt,
   '<=': le,
   '>': gt,
@@ -98,6 +106,9 @@ const core = {
   'read-string': readString,
   slurp,
   'swap!': swap,
+  cons,
+  concat,
+  vec,
 };
 
 module.exports = core;

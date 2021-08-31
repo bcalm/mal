@@ -6,6 +6,50 @@ class MalVal {
   }
 }
 
+const equals = (val1, val2) => {
+  if (val1 instanceof MalVal) {
+    return val1.equals(val2);
+  }
+  return val1 === val2;
+};
+
+class MalSeq extends MalVal {
+  constructor(ast) {
+    super();
+    this.ast = ast;
+  }
+
+  equals(that) {
+    if (!(that instanceof MalSeq)) return false;
+
+    if (this.ast.length !== that.ast.length) return false;
+
+    return this.ast.every((element, index) =>
+      equals(element, anotherList.ast[index])
+    );
+  }
+
+  isEmpty() {
+    return this.ast.length === 0;
+  }
+
+  length() {
+    return this.ast.length;
+  }
+
+  beginsWith(value) {
+    return this.ast[0] && this.ast[0].symbol === value;
+  }
+
+  cons(value) {
+    return new List([value, ...this.ast]);
+  }
+
+  concat(that) {
+    return new List([...this.ast, ...that.ast]);
+  }
+}
+
 const mkString = (element, open, close) => {
   return `${open}${element}${close}`;
 };
@@ -17,61 +61,27 @@ const prStr = (value, print_readably = false) => {
   return value.toString();
 };
 
-class List extends MalVal {
+class List extends MalSeq {
   constructor(ast) {
-    super();
-    this.ast = ast;
+    super(ast);
+    this.ast = this.ast;
   }
 
   prn_str(print_readably = false) {
     const element = this.ast.map((ast) => prStr(ast, print_readably)).join(' ');
     return mkString(element, '(', ')');
   }
-
-  isEmpty() {
-    return this.ast.length === 0;
-  }
-
-  length() {
-    return this.ast.length;
-  }
-
-  equals(anotherList) {
-    if (!(anotherList instanceof List)) return false;
-    if (this.ast.length !== anotherList.ast.length) return false;
-
-    return this.ast.every(
-      (element, index) => element === anotherList.ast[index]
-    );
-  }
 }
 
-class Vector extends MalVal {
+class Vector extends MalSeq {
   constructor(ast) {
-    super();
+    super(ast);
     this.ast = ast;
   }
 
   prn_str(print_readably = false) {
     const element = this.ast.map((ast) => prStr(ast, print_readably)).join(' ');
     return mkString(element, '[', ']');
-  }
-
-  isEmpty() {
-    return this.ast.length === 0;
-  }
-
-  length() {
-    return this.ast.length;
-  }
-
-  equals(anotherVector) {
-    if (!(anotherVector instanceof Vector)) return false;
-    if (this.ast.length !== anotherVector.ast.length) return false;
-
-    return this.ast.every(
-      (element, index) => element === anotherVector.ast[index]
-    );
   }
 }
 
@@ -95,7 +105,6 @@ class HashMap extends MalVal {
       result += separator;
       result += prStr(v, print_readably);
     }
-    console.log(result);
     return mkString(result, '{', '}');
   }
 
@@ -105,6 +114,19 @@ class HashMap extends MalVal {
 
   length() {
     return this.ast.size;
+  }
+
+  equals(that) {
+    if (!(that instanceof HashMap)) {
+      return false;
+    }
+
+    const otherEntries = that.entries();
+
+    return this.entries().every(([key, val], ind) => {
+      const [thatKey, thatVal] = otherEntries[ind];
+      return equals(key, thatKey) && equals(val, thatVal);
+    });
   }
 }
 
@@ -119,13 +141,17 @@ class Nil extends MalVal {
 }
 
 class Symbol extends MalVal {
-  constructor(ast) {
+  constructor(symbol) {
     super();
-    this.symbol = ast;
+    this.symbol = symbol;
   }
 
   prn_str(print_readably = false) {
     return this.symbol.toString();
+  }
+
+  equals(that) {
+    return that instanceof Symbol && this.symbol === that.symbol;
   }
 }
 
@@ -136,12 +162,11 @@ class Str extends MalVal {
   }
 
   equals(anotherString) {
-    if (!(anotherString instanceof String)) return false;
+    if (!(anotherString instanceof Str)) return false;
     return this.ast === anotherString.ast;
   }
 
   prn_str(print_readably = false) {
-    console.log(print_readably);
     if (print_readably) {
       return (
         '"' +
@@ -184,6 +209,10 @@ class Fn extends MalVal {
   prn_str(print_readably = false) {
     return '#<function>';
   }
+
+  equals(that) {
+    return this === that;
+  }
 }
 
 class Atom extends MalVal {
@@ -222,4 +251,5 @@ module.exports = {
   Atom,
   MalVal,
   prStr,
+  equals,
 };
