@@ -2,7 +2,7 @@ class MalVal {
   constructor() {}
 
   prn_str(print_readably = false) {
-    return 'hello_world';
+    return 'default MalVal';
   }
 }
 
