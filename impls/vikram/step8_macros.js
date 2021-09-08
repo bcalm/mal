@@ -92,14 +92,8 @@ const macroexpand = (ast, env) => {
 
 const createFunction = (ast, binds, env) => {
   return function (...args) {
-    console.log(args, 'args');
-    let evaluatedArgs = args.map((x) => EVAL(x, env));
-    const fn_env = new Env(env, binds, evaluatedArgs);
-    let result = new Nil();
-    for (let i = 2; i < ast.ast.length; i++) {
-      result = EVAL(ast.ast[i], fn_env);
-    }
-    return result;
+    const fn_env = new Env(env, binds, args);
+    return EVAL(ast.ast[2], fn_env);
   };
 };
 
@@ -189,6 +183,7 @@ const eval = (ast) => EVAL(ast, replEnv);
 loadSym(replEnv, 'eval', eval);
 
 rep('(def! not (fn* (a) (if a false true)))');
+
 rep(
   '(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))'
 );

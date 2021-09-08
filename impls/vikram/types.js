@@ -58,7 +58,6 @@ const prStr = (value, print_readably = false) => {
   if (value instanceof MalVal) {
     return value.prn_str(print_readably);
   }
-  console.log(value, '=============');
   return value.toString();
 };
 
