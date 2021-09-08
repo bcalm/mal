@@ -33,7 +33,7 @@ class MalSeq extends MalVal {
     return this.ast.length === 0;
   }
 
-  length() {
+  count() {
     return this.ast.length;
   }
 
@@ -58,6 +58,7 @@ const prStr = (value, print_readably = false) => {
   if (value instanceof MalVal) {
     return value.prn_str(print_readably);
   }
+  console.log(value, '=============');
   return value.toString();
 };
 
@@ -198,12 +199,13 @@ class KeyWord extends MalVal {
 }
 
 class Fn extends MalVal {
-  constructor(fnBody, binds, env, fn) {
+  constructor(fnBody, binds, env, fn, is_macro = false) {
     super();
     this.fnBody = fnBody;
     this.binds = binds;
     this.env = env;
     this.fn = fn;
+    this.is_macro = is_macro;
   }
 
   prn_str(print_readably = false) {
@@ -212,6 +214,10 @@ class Fn extends MalVal {
 
   equals(that) {
     return this === that;
+  }
+
+  apply(args) {
+    return this.fn.apply(null, args);
   }
 }
 
@@ -250,6 +256,7 @@ module.exports = {
   Fn,
   Atom,
   MalVal,
+  MalSeq,
   prStr,
   equals,
 };

@@ -6,8 +6,8 @@ class Env {
     this.outer = outer;
     for (let index = 0; index < binds.length; index++) {
       const symbol = binds[index];
-      if (symbol == '&') {
-        this.data[binds[index + 1]] = new List(exprs.slice(index));
+      if (symbol.symbol === '&') {
+        this.data[binds[index + 1].symbol] = new List(exprs.slice(index));
         break;
       } else this.set(symbol, exprs[index]);
     }
